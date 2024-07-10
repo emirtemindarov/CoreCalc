@@ -16,24 +16,6 @@ import com.example.corecalc.ui.theme.CoreCalcTheme
 class MainActivity : ComponentActivity() {
 
     private val core = Core()
-    /*private val getP1: () -> Double = {
-        core.getP1()
-    }
-    private val setP1: (p1: Double) -> Unit = { p1 ->
-        core.setP1(p1)
-    }
-    private val getP2: () -> Double = {
-        core.getP2()
-    }
-    private val setP2: (p2: Double) -> Unit = { p2 ->
-        core.setP2(p2)
-    }
-    private val getSign: () -> SIGN? = {
-        core.getSign()
-    }
-    private val setSign: (sign: SIGN?) -> Unit = { sign ->
-        core.setSign(sign)
-    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

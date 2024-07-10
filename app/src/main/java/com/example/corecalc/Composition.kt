@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,12 +63,11 @@ fun RoundedButton(
 
 @Composable
 fun Composition(
-    core: Core /*= viewModel()*/,
+    core: Core/*(autoSolve = true)*/ /*= viewModel()*/,
     modifier: Modifier
 ) {
-    val p1 = core.p1.collectAsState()
-    val p2 = core.p2.collectAsState()
-    val sign = core.sign.collectAsState()
+    val expr = remember { mutableStateOf("0") }
+    // val earLyResult = core.earlyResult.collectAsState()
 
     Column(
         modifier = modifier
@@ -84,17 +85,9 @@ fun Composition(
             verticalAlignment = Alignment.Bottom
         ) {
             Text(
-                p1.value.let { if (it % 1 == .0) it.toInt().toString() else it.toString() } +
-                        when (sign.value) {
-                            null -> ""
-                            else -> " ${sign.value!!.s}"
-                        } +
-                        when (p2.value) {
-                            null -> ""
-                            else -> " ${p2.value.let { if (it!! % 1 == .0) it.toInt().toString() else it.toString() }}"
-                        },
+                text = expr.value,
                 color = Color.Black,
-                fontSize = (60-(p1.value.toString().length+sign.value.toString().length+p2.value.toString().length)).sp,
+                fontSize = (60-(expr.value.length)).sp,
                 fontFamily = FontFamily.SansSerif,
                 fontWeight = FontWeight.ExtraBold
                 //modifier = Modifier
@@ -135,7 +128,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(1.0)
+                                expr.value = core.processInput(expr.value, "1")
                             }
                         )
                         Surface(modifier = Modifier
@@ -154,7 +147,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(2.0)
+                                expr.value = core.processInput(expr.value, "2")
                             }
                         )
                         Surface(modifier = Modifier
@@ -173,7 +166,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(3.0)
+                                expr.value = core.processInput(expr.value, "3")
                             }
                         )
                         Surface(modifier = Modifier
@@ -192,7 +185,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.setSign(SIGN.ADD)
+                                expr.value = core.processInput(expr.value, "+")
                             }
                         )
                         Surface(modifier = Modifier
@@ -211,7 +204,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.solve()
+                                expr.value = core.solve(expr.value)
                             }
                         )
                     }
@@ -289,7 +282,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(4.0)
+                                expr.value = core.processInput(expr.value, "4")
                             }
                         )
                         Surface(modifier = Modifier
@@ -308,7 +301,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(5.0)
+                                expr.value = core.processInput(expr.value, "5")
                             }
                         )
                         Surface(modifier = Modifier
@@ -327,7 +320,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(6.0)
+                                expr.value = core.processInput(expr.value, "6")
                             }
                         )
                         Surface(modifier = Modifier
@@ -346,7 +339,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.setSign(SIGN.SUB)
+                                expr.value = core.processInput(expr.value, "-")
                             }
                         )
                         Surface(modifier = Modifier
@@ -365,7 +358,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.clear()
+                                expr.value = core.clear(expr.value)
                             }
                         )
                     }
@@ -443,7 +436,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(7.0)
+                                expr.value = core.processInput(expr.value, "7")
                             }
                         )
                         Surface(modifier = Modifier
@@ -462,7 +455,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(8.0)
+                                expr.value = core.processInput(expr.value, "8")
                             }
                         )
                         Surface(modifier = Modifier
@@ -481,7 +474,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(9.0)
+                                expr.value = core.processInput(expr.value, "9")
                             }
                         )
                         Surface(modifier = Modifier
@@ -500,7 +493,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.setSign(SIGN.MUL)
+                                expr.value = core.processInput(expr.value, "*")
                             }
                         )
                         Surface(modifier = Modifier
@@ -519,7 +512,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.clearAll()
+                                expr.value = "0"
                             }
                         )
                     }
@@ -597,7 +590,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)
+                                expr.value = core.processInput(expr.value, "0")
                             }
                         )
                         Surface(modifier = Modifier
@@ -616,7 +609,7 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0) // TODO
+                                expr.value = core.processInput(expr.value, ".")
                             }
                         )
                         Surface(modifier = Modifier
@@ -635,7 +628,8 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                // TODO либо посчитать выражение и поделить на 100, либо поделить на 100 только токен на котором курсор
+
                             }
                         )
                         Surface(modifier = Modifier
@@ -649,12 +643,12 @@ fun Composition(
                             )
                         }
                         RoundedButton({
-                            Text(":",
+                            Text("/",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.setSign(SIGN.DIV)
+                                expr.value = core.processInput(expr.value, "/")
                             }
                         )
                         Surface(modifier = Modifier
@@ -668,12 +662,13 @@ fun Composition(
                             )
                         }
                         RoundedButton({
-                            Text("R",  // Возвращение результата последнего вычисления?     размещать историю вычислений поверх текущего поля и можно будет кликнуть и чтото произойдет?
+                            Text("R",  // Вставка результата последнего вычисления?    дополнительно размещать историю вычислений поверх текущего поля и можно будет кликнуть и чтото произойдет?
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                // TODO где хранить это? в переменной класса?
+
                             }
                         )
                     }
@@ -746,12 +741,12 @@ fun Composition(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RoundedButton({
-                            Text("abs",
+                            Text("(",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                expr.value = core.processInput(expr.value, "(")
                             }
                         )
                         Surface(modifier = Modifier
@@ -765,12 +760,12 @@ fun Composition(
                             )
                         }
                         RoundedButton({
-                            Text("sqr",
+                            Text(")",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                expr.value = core.processInput(expr.value, ")")
                             }
                         )
                         Surface(modifier = Modifier
@@ -784,12 +779,12 @@ fun Composition(
                             )
                         }
                         RoundedButton({
-                            Text("sqrt",
+                            Text("^",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                expr.value = core.processInput(expr.value, "^")
                             }
                         )
                         Surface(modifier = Modifier
@@ -803,12 +798,12 @@ fun Composition(
                             )
                         }
                         RoundedButton({
-                            Text("log",
+                            Text("lg",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                         },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                // TODO log10(b) = lg(b)   2^3 = 8 => log2(8) = 3
                             }
                         )
                         Surface(modifier = Modifier
@@ -827,10 +822,17 @@ fun Composition(
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                core.addDigit(0.0)  // TODO
+                                // TODO core.processInput(expr.value, "e") добавляется на место курсора
+
                             }
                         )
-                        // div, mod, log n, ln, swap - поменять записанные p1 и p2 местами, buf - открыть буфер результатов?
+                        // TODO
+                        // div(, mod(, log2(, abs, sqrt, buf - открыть список результатов для вставки?,
+                        // log2(x) = ln(x) / ln(2)
+
+                        // TODO core.processInput(expr.value, "√") добавляется на место курсора      sqrt
+                        // TODO  core.processInput(expr.value, "abs(") добавляется на место курсора  abs
+                        // TODO loge(b) = ln(b)   2^3 = 8 => log2(8) = 3                             ln
                     }
                 }
 

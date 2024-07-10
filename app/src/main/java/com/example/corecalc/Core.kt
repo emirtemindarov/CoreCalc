@@ -5,142 +5,171 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.math.pow
 
-class Core : ViewModel() {
-    private val _p1: MutableStateFlow<Double> = MutableStateFlow(.0)
-    val p1: StateFlow<Double> = _p1.asStateFlow()
-    private val _p2: MutableStateFlow<Double?> = MutableStateFlow(null)
-    val p2: StateFlow<Double?> = _p2.asStateFlow()
-    private val _sign: MutableStateFlow<SIGN?> = MutableStateFlow(null)
-    val sign: StateFlow<SIGN?> = _sign.asStateFlow()
+class Core(
+    autoSolve: Boolean = false,
+    private val logger: LoggerInterface = LogWrapper()
+) : ViewModel() {
+    private val _autoSolve: MutableStateFlow<Boolean> = MutableStateFlow(autoSolve)
+    // val autoSolve: StateFlow<Boolean> = _autoSolve.asStateFlow()
+    private val _earlyResult: MutableStateFlow<String> = MutableStateFlow("")
+    val earlyResult: StateFlow<String> = _earlyResult.asStateFlow()
 
-    fun setP1(p1: Double) {
-        _p1.value = p1
+    // либо назначить кнопку для вычисления, либо каждый раз вызывать при изменении выражения
+    fun solve(expr: String): String {
+        logger.d("expr", expr)
+        var result = .0
+
+        try {
+            result = evaluate(postfix(tokenize(expr)))
+        } catch (e: Exception) {
+            e.message?.let { logger.e("result error", it) }
+        } finally {
+            logger.d("result", "$result")
+        }
+
+        return try {
+            logger.d("result.toInt().toString()", "${result.toInt()}")
+            result.toInt().toString()
+        } catch (e: Exception) {
+            result.toString()
+        }
     }
 
-    /*fun getP1(): Double {
-        return _p1.value
-    }*/
-
-    fun setP2(p2: Double?) {
-        _p2.value = p2
+    fun setAutoSolve(choice: Boolean) {
+        when (choice) {
+            true -> _autoSolve.value = true
+            false -> _autoSolve.value = false
+        }
     }
 
-    /*fun getP2(): Double? {
-        return _p2.value
-    }*/
-
-    fun setSign(sign: SIGN?) {
-        _sign.value = sign
+    fun processInput(currentExpression: String, inputChar: String): String {
+        val result = when {
+            currentExpression == "0" && inputChar in setOf("+", "*", "/", "^") -> currentExpression + inputChar
+            currentExpression == "0" -> inputChar
+            inputChar in setOf("+","-", "*", "/", "^") &&
+                    currentExpression.isNotEmpty() &&
+                    currentExpression.last().toString() in setOf("+", "-", "*", "/", "^") ->
+                currentExpression.dropLast(1) + inputChar
+            else -> currentExpression + inputChar
+        }
+        if (_autoSolve.value) {
+            _earlyResult.value = result
+        }
+        return result
     }
 
-    /*fun getSign(): SIGN? {
-        return _sign.value
-    }*/
+    private fun tokenize(expr: String): List<String> {
+        val pattern = """(\d+\.\d+|\d+\.|\.\d+|\d+|\+|-|\*|/|\(|\)|\^)""".toRegex()
+        val tokens = pattern.findAll(expr)
+            .map { it.value }
+            .toMutableList()
 
-    fun addDigit(digit: Double) {
-        Log.d("addDigit до", "${_p1.value} ${_sign.value} ${_p2.value}")
-        Log.d("addDigit", "$digit")
-        // 0
-        if (_p1.value == .0 && _sign.value == null) {
-            Log.d("addDigit #1", "addDigit #1")
-            _p1.value = digit
+        if (tokens.isNotEmpty() && tokens[0] == "-") {
+            tokens.add(0, "0")
         }
-        // (0 + 0) || (1 + 0)
-        else if (_sign.value != null && (_p2.value == null || _p2.value == .0)) {
-            Log.d("addDigit #2", "addDigit #2")
-            _p2.value = digit
-        }
-        // (0 + 1) || (1 + 1)
-        else if (_sign.value != null && _p2.value != .0 && _p2.value != null) {
-            Log.d("addDigit #3", "addDigit #3")
-            _p2.value = _p2.value?.times(10)
-            _p2.value = _p2.value?.plus(digit)
-        }
-        // 1
-        else if (_p1.value != .0 && _sign.value == null) {
-            Log.d("addDigit #4", "addDigit #4")
-            _p1.value = _p1.value.times(10)
-            _p1.value = _p1.value.plus(digit)
-        } else { Log.w("addDigit #0", "addDigit #0") }
-        Log.d("addDigit после", "${_p1.value} ${_sign.value} ${_p2.value}")
-    }
 
-    fun clear() {
-        Log.d("clear до", "${_p1.value} ${_sign.value} ${_p2.value}")
-        // 0
-        if (_p1.value == .0 && _sign.value == null) {
-            Log.d("clear #1", "clear #1")
-            // NOP
-        }
-        // (0 +) || (1 +)
-        else if (_sign.value != null && _p2.value == null) {
-            Log.d("clear #2", "clear #2")
-            _sign.value = null
-        }
-        // 1
-        else if (_sign.value == null) {
-            Log.d("clear #3", "clear #3")
-            _p1.value = try {
-                // FIXME
-                Log.i("p1", _p1.value.toString().substring(0, _p1.value.toString().length - 1))
-                _p1.value.toString().substring(0, _p1.value.toString().length - 1).toDouble()
-            } catch (_: Exception) {
-                .0
+        // ")(" = ")", "*", "("
+        val result = mutableListOf<String>()
+        for (i in tokens.indices) {
+            if (i < tokens.size - 1 && tokens[i] == ")" && tokens[i + 1] == "(") {
+                result.add(")")
+                result.add("*")
+                result.add("(")
+            } else if (i > 0 && tokens[i] == "(" && tokens[i - 1].matches("""\d+""".toRegex())) {
+                // Number followed by opening parenthesis
+                result.add("*")
+                result.add(tokens[i])
+            } else if (i < tokens.size - 1 && tokens[i] == ")" && tokens[i+ 1].matches("""\d+""".toRegex())) {
+                // Closing parenthesis followed by number
+                result.add(tokens[i])
+                result.add("*")
+            } else {
+                result.add(tokens[i])
             }
         }
-        // (0 + 1) || (1 + 1)
-        else if (_sign.value != null && _p2.value != .0 && _p2.value != null) {
-            Log.d("clear #4", "clear #4")
-            _p2.value = try {
-                _p2.value.toString().substring(0, _p2.value.toString().length - 1).toDouble()
-            } catch (_: Exception) {
-                null
-            }
-        } else { Log.w("clear #0", "clear #0") }
-        Log.d("clear после", "${_p1.value} ${_sign.value} ${_p2.value}")
-    }
 
-    fun clearAll() {
-        Log.d("clearAll до", "${_p1.value} ${_sign.value} ${_p2.value}")
-        _p1.value = .0
-        _p2.value = null
-        _sign.value = null
-        Log.d("clearAll после", "${_p1.value} ${_sign.value} ${_p2.value}")
-    }
-
-    fun solve() {
-        Log.d("solve до", "${_p1.value} ${_sign.value} ${_p2.value}")
-        _p1.value = when (_sign.value) {
-            SIGN.ADD -> when(_p2.value) {
-                null -> _p1.value
-                else -> _p1.value + _p2.value!!
+        // Handle trailing operators
+        if (result.isNotEmpty()) {
+            val lastToken = result.last()
+            if (lastToken == "+" || lastToken == "-") {
+                result.add("0")
+            } else if (lastToken == "*" || lastToken == "/" || lastToken == "^") {
+                result.add("1")
             }
-            SIGN.SUB -> when(_p2.value) {
-                null -> _p1.value
-                else -> _p1.value - _p2.value!!
-            }
-            SIGN.MUL -> when(_p2.value) {
-                null -> _p1.value
-                else -> _p1.value * _p2.value!!
-            }
-            SIGN.DIV -> when(_p2.value) {
-                null -> _p1.value
-                else -> _p1.value / _p2.value!!
-            }
-            null -> {
-                _p1.value
-            } // знак не поставлен, но нажато равно
         }
-        _sign.value = null
-        _p2.value = null
-        Log.d("solve после", "${_p1.value} ${_sign.value} ${_p2.value}")
-    }
-}
 
-enum class SIGN(val s: String) {
-    ADD("+"),
-    SUB("-"),
-    MUL("*"),
-    DIV(":")
+        return result
+    }
+
+    private fun postfix(infix: List<String>): List<String> {
+        logger.d("infix", "$infix")
+        val output = mutableListOf<String>()
+        val operators = mutableListOf<String>()
+        for (token in infix) {
+            when (token) {
+                "+", "-" -> {
+                    while (operators.isNotEmpty() && operators.last() != "(") {
+                        output.add(operators.removeLast())
+                    }
+                    operators.add(token)
+                }
+                "*", "/", "^" -> {
+                    while (operators.isNotEmpty() && operators.last() != "("
+                        && (operators.last() == "*" || operators.last() == "/" || operators.last() == "^")) {
+                        output.add(operators.removeLast())
+                    }
+                    operators.add(token)
+                }
+                "(" -> operators.add(token)
+                ")" -> {
+                    while (operators.isNotEmpty() && operators.last() != "(") {
+                        output.add(operators.removeLast())
+                    }
+                }
+                else -> output.add(token)
+            }
+            logger.d("operators", "$operators")
+        }
+        while (operators.isNotEmpty()) {
+            when (operators.last()) {
+                "(" -> operators.removeLast()
+                else -> output.add(operators.removeLast())
+            }
+        }
+        return output
+    }
+
+    private fun evaluate(postfix: List<String>): Double {
+        logger.d("postfix", "$postfix")
+        val stack = mutableListOf<Double>()
+        for (token in postfix) {
+            if (token == "+" || token == "-" || token == "*" || token == "/" || token == "^") {
+                val right = stack.removeLast()
+                val left = stack.removeLast()
+                logger.d("right", "$right")
+                logger.d("left", "$left")
+                when (token) {
+                    "+" -> stack.add(left + right)
+                    "-" -> stack.add(left - right)
+                    "*" -> stack.add(left * right)
+                    "/" -> stack.add(left / right)
+                    "^" -> stack.add(left.pow(right))
+                }
+            } else {
+                stack.add(token.toDouble())
+            }
+        }
+        return stack.last()
+    }
+
+    fun clear(expr: String): String {
+        return if (expr.isNotEmpty()) {
+            val clearedExpr = expr.dropLast(1)
+            clearedExpr.ifEmpty { "0" }
+        } else {
+            "0"
+        }
+    }
 }
