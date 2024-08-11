@@ -46,18 +46,26 @@ fun RoundedButton(
     buttonColor: Color = Color.Unspecified,
     action: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .size(64.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(buttonColor)
-            .clickable {
-                Log.i("click", text.toString())
-                action()
-            },
-        contentAlignment = Alignment.Center
+    // Визуальный эффект возвышения для кнопки
+    Surface(modifier = Modifier
+        .wrapContentSize(),
+        tonalElevation = 8.dp,
+        shadowElevation = 4.dp,
+        shape = RoundedCornerShape(16.dp)
     ) {
-        text()
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(buttonColor)
+                .clickable {
+                    Log.i("click", text.toString())
+                    action()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            text()
+        }
     }
 }
 
@@ -103,12 +111,14 @@ fun Composition(
             shadowElevation = 20.dp,
             shape = RoundedCornerShape(16.dp)
         ) {
+            // TODO Ползунок для вытягивания доп. кнопок
+
             // Панель кнопок
             Column(
                 modifier = Modifier
                     .background(Color.White)
                     .fillMaxSize()
-                    .padding(8.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -131,6 +141,7 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "1")
                             }
                         )
+                        /*// Межкнопочный раделитель внутри строки
                         Surface(modifier = Modifier
                             .wrapContentSize(),
                             shadowElevation = 1.dp
@@ -140,7 +151,7 @@ fun Composition(
                                 color = Color.LightGray,
                                 thickness = 1.dp
                             )
-                        }
+                        }*/
                         RoundedButton({
                             Text("2",
                                 fontSize = 24.sp,
@@ -150,16 +161,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "2")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("3",
                                 fontSize = 24.sp,
@@ -169,16 +170,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "3")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("+",
                                 fontSize = 24.sp,
@@ -188,16 +179,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "+")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("=",
                                 fontSize = 24.sp,
@@ -208,7 +189,7 @@ fun Composition(
                             }
                         )
                     }
-                    // Ряд разделитель
+                    /*// Ряд разделитель
                     Row(
                         modifier = Modifier
                             //.background(Color.Gray)
@@ -226,47 +207,7 @@ fun Composition(
                                 thickness = 1.dp
                             )
                         }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                    }
+                    }*/
                     // 2 ряд кнопок
                     Row(
                         modifier = Modifier
@@ -285,16 +226,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "4")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("5",
                                 fontSize = 24.sp,
@@ -304,16 +235,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "5")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("6",
                                 fontSize = 24.sp,
@@ -323,16 +244,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "6")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("-",
                                 fontSize = 24.sp,
@@ -342,16 +253,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "-")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("C",
                                 fontSize = 24.sp,
@@ -361,65 +262,6 @@ fun Composition(
                                 expr.value = core.clear(expr.value)
                             }
                         )
-                    }
-                    // Ряд разделитель
-                    Row(
-                        modifier = Modifier
-                            //.background(Color.Gray)
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                     }
                     // 3 ряд кнопок
                     Row(
@@ -439,16 +281,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "7")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("8",
                                 fontSize = 24.sp,
@@ -458,16 +290,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "8")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("9",
                                 fontSize = 24.sp,
@@ -477,16 +299,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "9")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("*",
                                 fontSize = 24.sp,
@@ -496,84 +308,15 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "*")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("AC",
                                 fontSize = 24.sp,
                                 fontFamily = FontFamily.SansSerif)
                             },
                             action = {
-                                expr.value = "0"
+                                expr.value = core.allClear()
                             }
                         )
-                    }
-                    // Ряд разделитель
-                    Row(
-                        modifier = Modifier
-                            //.background(Color.Gray)
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                     }
                     // 4 ряд кнопок
                     Row(
@@ -593,16 +336,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "0")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text(".",
                                 fontSize = 24.sp,
@@ -612,16 +345,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, ".")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("%",   // Процент у второго числа от первого (p1 % p2 = 100 % 50 = 50 )
                                 fontSize = 24.sp,
@@ -632,16 +355,6 @@ fun Composition(
 
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("/",
                                 fontSize = 24.sp,
@@ -651,16 +364,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "/")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("R",  // Вставка результата последнего вычисления?    дополнительно размещать историю вычислений поверх текущего поля и можно будет кликнуть и чтото произойдет?
                                 fontSize = 24.sp,
@@ -671,65 +374,6 @@ fun Composition(
 
                             }
                         )
-                    }
-                    // Ряд разделитель
-                    Row(
-                        modifier = Modifier
-                            //.background(Color.Gray)
-                            .wrapContentHeight()
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier.width(64.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                     }
                     // 5 ряд кнопок
                     Row(
@@ -749,16 +393,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "(")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text(")",
                                 fontSize = 24.sp,
@@ -768,16 +402,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, ")")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("^",
                                 fontSize = 24.sp,
@@ -787,16 +411,6 @@ fun Composition(
                                 expr.value = core.processInput(expr.value, "^")
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("lg",
                                 fontSize = 24.sp,
@@ -806,16 +420,6 @@ fun Composition(
                                 // TODO log10(b) = lg(b)   2^3 = 8 => log2(8) = 3
                             }
                         )
-                        Surface(modifier = Modifier
-                            .wrapContentSize(),
-                            shadowElevation = 1.dp
-                        ) {
-                            VerticalDivider(
-                                modifier = Modifier.height(54.dp),
-                                color = Color.LightGray,
-                                thickness = 1.dp
-                            )
-                        }
                         RoundedButton({
                             Text("e",
                                 fontSize = 24.sp,
